@@ -34,24 +34,23 @@ class Transaction{
 		return signedTransaction;
 	}
 
-	static parseSignedTransaction(signedTransaction, verify){
+	static parseSignedTransaction(signedTransaction){
 		const signedTransactionObj = JSON.parse(signedTransaction);
 		const returnedResult = {};
-		if(verify){
-			returnedResult.verified = false;
-			try{
-				const payloadHash = Transaction.hashPayload(signedTransactionObj.payload);
-				const signatureText = signedTransactionObj.signature[0];
-				const signature = Buffer.from(signatureText, "hex");
-				const recovery = signedTransactionObj.signature[1];
-				const publicKey = secp256k1.recover(payloadHash, signature, recovery, false);
-				returnedResult.verified = secp256k1.verify(payloadHash, signature, publicKey);
-				returnedResult.from = Account.publicKeyToAddress(publicKey);
-			}catch(e){
-				returnedResult.from = null;
-			}
+		returnedResult.verified = false;
+		try{
+			const payloadHash = Transaction.hashPayload(signedTransactionObj.payload);
+			const signatureText = signedTransactionObj.signature[0];
+			const signature = Buffer.from(signatureText, "hex");
+			const recovery = signedTransactionObj.signature[1];
+			const publicKey = secp256k1.recover(payloadHash, signature, recovery, false);
+			returnedResult.from = Account.publicKeyToAddress(publicKey);
+			returnedResult.verified = secp256k1.verify(payloadHash, signature, publicKey);
+		}catch(e){
+			returnedResult.from = null;
 		}
 		const payload = JSON.parse(signedTransactionObj.payload);
+		returnedResult.nonce = payload.nonce;
 		returnedResult.transaction = new this(payload.value, payload.recipient, payload.timeCost, payload.maxTime, payload.method, payload.data);
 		return returnedResult;
 	}
