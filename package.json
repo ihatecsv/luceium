@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/ihatecsv/luceium/issues"
   },
-  "homepage": "https://github.com/ihatecsv/luceium#readme"
+  "homepage": "https://github.com/ihatecsv/luceium#readme",
+  "dependencies": {
+    "elliptic": "^6.4.0",
+    "keccak": "^1.4.0",
+    "secp256k1": "^3.5.0"
+  }
 }
