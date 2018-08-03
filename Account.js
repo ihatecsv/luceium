@@ -4,6 +4,7 @@ const crypto = require("crypto");
 
 class Account{
 	constructor(){
+		this.nonce = 0;
 		this.generateKeyPair();
 	}
 
