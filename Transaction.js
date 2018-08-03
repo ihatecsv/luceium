@@ -38,15 +38,17 @@ class Transaction{
 		const signedTransactionObj = JSON.parse(signedTransaction);
 		const returnedResult = {};
 		if(verify){
+			returnedResult.verified = false;
 			try{
 				const payloadHash = Transaction.hashPayload(signedTransactionObj.payload);
 				const signatureText = signedTransactionObj.signature[0];
 				const signature = Buffer.from(signatureText, "hex");
 				const recovery = signedTransactionObj.signature[1];
 				const publicKey = secp256k1.recover(payloadHash, signature, recovery, false);
-				returnedResult.address = Account.publicKeyToAddress(publicKey);
+				returnedResult.verified = secp256k1.verify(payloadHash, signature, publicKey);
+				returnedResult.from = Account.publicKeyToAddress(publicKey);
 			}catch(e){
-				returnedResult.address = null;
+				returnedResult.from = null;
 			}
 		}
 		const payload = JSON.parse(signedTransactionObj.payload);
