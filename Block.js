@@ -2,13 +2,18 @@ const Transaction = require("./Transaction");
 const Hasher = require("./Hasher");
 
 class Block{
-	constructor(height){
-        this.height = height;
+	constructor(parent){
+        this.parent = parent; //Block
+        this.height = (this.parent != null) ? (parent.height + 1) : 0;
+
         this.merkleRoot = null; //Buffer
         this.transactions = []; //Transaction[]
-
-        this.parent = null; //Block
         this.children = []; //Block[]
+    }
+
+    getHash() {
+        if(typeof this.nonce === "undefined") return null;
+        return Hasher.hash(this.getMineableData() + this.nonce);
     }
 
     addChild(block) {
@@ -27,6 +32,20 @@ class Block{
         for(let i = 0; i < transactions.length; i++){
             this.addTransaction(transactions[i]);
         }
+    }
+
+    getMineableData(){
+        let parentHash = Buffer.alloc(32);
+        if(this.parent != null){
+            parentHash = this.parent.getHash();
+        }
+        const mineableDataObject = {
+            height: this.height,
+            merkleRoot: this.getMerkleRoot().toString("hex"),
+            parentHash: parentHash.toString("hex")
+        };
+        const mineableData = JSON.stringify(mineableDataObject) + " 💰 ";
+        return mineableData;
     }
 
     getMerkleRoot(){
@@ -51,6 +70,16 @@ class Block{
             currentLevel++;
         }
         return this.merkleTree[currentLevel][0];
+    }
+
+    static printMerkleTree(block){
+        for(let i = 0; i < block.merkleTree.length; i++){
+            let curLine = "";
+            for(let j = 0; j < block.merkleTree[i].length; j++){
+                curLine += block.merkleTree[i][j].toString("hex").substr(0, 8) + " ";
+            }
+            console.log(curLine);
+        }
     }
 }
 

@@ -13,18 +13,20 @@ const newTrans = Transaction.deserialize(serializedTransaction).transaction;
 
 const newSerializedTransaction = Transaction.serialize(newTrans);
 
-const block = new Block(4);
+const genesisBlock = new Block(null);
 
-const fakeTransactions = Transaction.generateFakeTransactions(12);
+let fakeTransactions = Transaction.generateFakeTransactions(12);
 
-block.addTransactions(fakeTransactions);
+genesisBlock.addTransactions(fakeTransactions);
 
-block.getMerkleRoot();
+console.log(genesisBlock.getMineableData());
 
-for(let i = 0; i < block.merkleTree.length; i++){
-    let curLine = "";
-    for(let j = 0; j < block.merkleTree[i].length; j++){
-        curLine += block.merkleTree[i][j].toString("hex").substr(0, 8) + " ";
-    }
-    console.log(curLine);
-}
+genesisBlock.setSolution(5);
+
+const firstBlock = new Block(genesisBlock);
+
+fakeTransactions = Transaction.generateFakeTransactions(12);
+
+firstBlock.addTransactions(fakeTransactions);
+
+console.log(firstBlock.getMineableData());
