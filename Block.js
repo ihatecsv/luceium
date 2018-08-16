@@ -10,11 +10,11 @@ class Block{
         this.merkleRoot = null; //Buffer
         this.transactions = []; //Transaction[]
         this.children = []; //Block[]
+        this.nonce = 0;
     }
 
     getHash() {
-        if(typeof this.nonce === "undefined") return null;
-        return Hasher.hash(this.getMineableData() + this.nonce);
+        return Hasher.hash(this.getMineableData());
     }
 
     addChild(block) {
@@ -40,13 +40,13 @@ class Block{
         if(this.parent != null){
             parentHash = this.parent.getHash();
         }
-        const mineableDataObject = {
+        const mineableData = {
             height: this.height,
             merkleRoot: this.getMerkleRoot().toString("hex"),
-            parentHash: parentHash.toString("hex")
+            parentHash: parentHash.toString("hex"),
+            nonce: this.nonce
         };
-        const mineableData = JSON.stringify(mineableDataObject) + " 💰 ";
-        return mineableData;
+        return JSON.stringify(mineableData);
     }
 
     getMerkleRoot(){

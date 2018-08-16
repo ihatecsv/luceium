@@ -2,17 +2,6 @@ const Transaction = require("./Transaction");
 const Account = require("./Account");
 const Block = require("./Block");
 
-const myAccount = new Account();
-
-const myTrans = new Transaction(1, "0x9c22ff5f21f0b81b113e63f7db6da94fedef11b2", 0.0001, 1, "someFunc", {test: "abc"});
-myTrans.sign(myAccount);
-
-const serializedTransaction = Transaction.serialize(myTrans);
-
-const newTrans = Transaction.deserialize(serializedTransaction).transaction;
-
-const newSerializedTransaction = Transaction.serialize(newTrans);
-
 const genesisBlock = new Block(null);
 
 let fakeTransactions = Transaction.generateFakeTransactions(6);
@@ -27,6 +16,10 @@ fakeTransactions = Transaction.generateFakeTransactions(2);
 
 firstBlock.addTransactions(fakeTransactions);
 
-firstBlock.setSolution(88);
+const diff = 2;
+while(firstBlock.getHash().toString("hex").substr(0, diff) != "0".repeat(diff)){
+    console.log(firstBlock.getHash().toString("hex"));
+    firstBlock.setSolution(firstBlock.nonce + 1);
+}
 
-console.log(firstBlock.getHash());
+console.log(firstBlock.getHash().toString("hex"));
