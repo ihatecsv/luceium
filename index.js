@@ -8,18 +8,23 @@ const myTrans = new Transaction(1, "0x9c22ff5f21f0b81b113e63f7db6da94fedef11b2",
 myTrans.sign(myAccount);
 
 const serializedTransaction = Transaction.serialize(myTrans);
-console.log(serializedTransaction);
 
 const newTrans = Transaction.deserialize(serializedTransaction).transaction;
 
 const newSerializedTransaction = Transaction.serialize(newTrans);
-console.log(newSerializedTransaction);
-/*
-const block = new Block(5);
 
-const fakeTransactions = Transaction.generateFakeTransactions(5);
+const block = new Block(4);
+
+const fakeTransactions = Transaction.generateFakeTransactions(10);
 
 block.addTransactions(fakeTransactions);
 
 block.getMerkleRoot();
-*/
+
+for(let i = 0; i < block.merkleTree.length; i++){
+    let curLine = "";
+    for(let j = 0; j < block.merkleTree[i].length; j++){
+        curLine += block.merkleTree[i][j][0].toString(16) + " ";
+    }
+    console.log(curLine);
+}

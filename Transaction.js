@@ -40,6 +40,12 @@ class Transaction{
 		this.signature = account.sign(payloadHash);
 	}
 
+	static getMerkleHash(transaction){
+		const recoveryBuffer = Buffer.from([transaction.signature[1]]);
+		const dataToHash = Buffer.concat([transaction.signature[0], recoveryBuffer]);
+		return Hasher.hash(dataToHash);
+	}
+
 	static serialize(transaction){
 		return {
 			payload: transaction.payload,
@@ -70,7 +76,7 @@ class Transaction{
 
 	static generateFakeTransactions(n){
 		const fakeTransactions = [];
-		for(let i = 0; i <= n; i++){
+		for(let i = 0; i < n; i++){
 			const fakeAccount = new Account();
 			const fakeSigningAccount = new Account();
 			const fakeValue = Math.floor(Math.random()* 100);
