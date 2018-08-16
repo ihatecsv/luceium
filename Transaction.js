@@ -4,7 +4,7 @@ const Account = require("./Account");
 const Hasher = require("./Hasher");
 
 class Transaction{
-	constructor(value, recipient, timeCost, maxTime, method, data, payload, signature){
+	constructor(value, recipient, timeCost, maxTime, method, data, nonce, payload, signature){
 		this.value = value;
 		this.recipient = recipient;
 		this.timeCost = timeCost;
@@ -12,13 +12,14 @@ class Transaction{
 		this.method = method;
 		this.data = data;
 		
+		this.nonce = nonce;
 		this.payload = payload;
 		this.signature = signature;
 	}
 
-	getPayload(nonce){
+	getPayload(){
 		return JSON.stringify({
-			nonce: nonce,
+			nonce: this.nonce,
 			value: this.value,
 			recipient: this.recipient,
 			timeCost: this.timeCost,
@@ -28,16 +29,22 @@ class Transaction{
 		});
 	}
 
+	setNonce(nonce){
+		this.nonce = nonce;
+	}
+
 	sign(account){
-		this.payload = this.getPayload(account.nonce);
-		const payloadHash = Transaction.hashPayload(this.payload);
+		this.setNonce(account.nonce);
+		this.payload = this.getPayload();
+		const payloadHash = Hasher.hash(this.payload);
 		this.signature = account.sign(payloadHash);
 	}
 
 	static serialize(transaction){
 		return {
 			payload: transaction.payload,
-			signature: transaction.signature
+			signature: transaction.signature[0].toString("hex"),
+			recovery: transaction.signature[1]
 		};
 	}
 
@@ -47,19 +54,34 @@ class Transaction{
 		returnedResult.verified = false;
 		try{
 			const payloadHash = Hasher.hash(serializedTransaction.payload);
-			const signatureText = serializedTransaction.signature[0];
-			const signature = Buffer.from(signatureText, "hex");
-			const recovery = serializedTransaction.signature[1];
-			const publicKey = secp256k1.recover(payloadHash, signature, recovery, false);
+			const signature = Buffer.from(serializedTransaction.signature, "hex");
+			const publicKey = secp256k1.recover(payloadHash, signature, serializedTransaction.recovery, false);
 			returnedResult.from = Account.publicKeyToAddress(publicKey);
 			returnedResult.verified = secp256k1.verify(payloadHash, signature, publicKey);
 		}catch(e){
 			returnedResult.from = null;
 		}
 		const payloadObject = JSON.parse(serializedTransaction.payload);
-		returnedResult.nonce = payload.nonce;
-		returnedResult.transaction = new this(payloadObject.value, payloadObject.recipient, payloadObject.timeCost, payloadObject.maxTime, payloadObject.method, payloadObject.data, serializedTransaction.payload, serializedTransaction.signature);
+		returnedResult.nonce = payloadObject.nonce;
+		const newTransSig = [Buffer.from(serializedTransaction.signature, "hex"), serializedTransaction.recovery];
+		returnedResult.transaction = new this(payloadObject.value, payloadObject.recipient, payloadObject.timeCost, payloadObject.maxTime, payloadObject.method, payloadObject.data, payloadObject.nonce, serializedTransaction.payload, newTransSig);
 		return returnedResult;
+	}
+
+	static generateFakeTransactions(n){
+		const fakeTransactions = [];
+		for(let i = 0; i <= n; i++){
+			const fakeAccount = new Account();
+			const fakeSigningAccount = new Account();
+			const fakeValue = Math.floor(Math.random()* 100);
+			const fakeTimeCost = Math.random();
+			const fakeMaxTime = Math.random()/2;
+			
+			const fakeTransaction = new Transaction(fakeValue, fakeAccount.getAddress(), fakeTimeCost, fakeMaxTime, "someFunc", {test: "abc"});
+			fakeTransaction.sign(fakeSigningAccount);
+			fakeTransactions.push(fakeTransaction);
+		}
+		return fakeTransactions;
 	}
 }
 

@@ -21,9 +21,9 @@ class Account{
 
 	sign(buffer) {
 		const signatureObject = secp256k1.sign(buffer, this.privateKey);
-		const hexSignature = signatureObject.signature.toString("hex");
+		const signature = signatureObject.signature;
 		const recovery = signatureObject.recovery;
-		return [hexSignature, recovery];
+		return [signature, recovery];
 	}
 
 	static publicKeyToAddress(publicKey) {

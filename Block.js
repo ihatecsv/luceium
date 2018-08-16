@@ -22,9 +22,16 @@ class Block{
         this.transactions.push(transaction);
     }
 
+    addTransactions(transactions){
+        for(let i = 0; i < transactions.length; i++){
+            this.addTransaction(transactions[i]);
+        }
+    }
+
     getMerkleRoot(){
         this.merkleTree = [];
-        this.merkleTree[0] = this.transactions.map(transaction => Hasher.hash(transaction.sig))
+        this.merkleTree[0] = this.transactions.map(transaction => Hasher.hash(transaction.signature[0]));
+        console.log(this.merkleTree);
     }
 }
 
