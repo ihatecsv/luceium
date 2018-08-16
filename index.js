@@ -15,7 +15,7 @@ const newSerializedTransaction = Transaction.serialize(newTrans);
 
 const block = new Block(4);
 
-const fakeTransactions = Transaction.generateFakeTransactions(10);
+const fakeTransactions = Transaction.generateFakeTransactions(12);
 
 block.addTransactions(fakeTransactions);
 
@@ -24,7 +24,7 @@ block.getMerkleRoot();
 for(let i = 0; i < block.merkleTree.length; i++){
     let curLine = "";
     for(let j = 0; j < block.merkleTree[i].length; j++){
-        curLine += block.merkleTree[i][j][0].toString(16) + " ";
+        curLine += block.merkleTree[i][j].toString("hex").substr(0, 8) + " ";
     }
     console.log(curLine);
 }

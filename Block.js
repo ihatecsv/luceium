@@ -30,10 +30,10 @@ class Block{
     }
 
     getMerkleRoot(){
+        this.merkleTree = [];
         if(this.transactions.length == 0){
             return Buffer.from("c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470", "hex"); //Return the empty hash
         }
-        this.merkleTree = [];
         this.merkleTree[0] = this.transactions.map(transaction => Transaction.getMerkleHash(transaction));
 
         let currentLevel = 0;
