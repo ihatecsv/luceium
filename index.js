@@ -15,18 +15,18 @@ const newSerializedTransaction = Transaction.serialize(newTrans);
 
 const genesisBlock = new Block(null);
 
-let fakeTransactions = Transaction.generateFakeTransactions(12);
+let fakeTransactions = Transaction.generateFakeTransactions(6);
 
 genesisBlock.addTransactions(fakeTransactions);
-
-console.log(genesisBlock.getMineableData());
 
 genesisBlock.setSolution(5);
 
 const firstBlock = new Block(genesisBlock);
 
-fakeTransactions = Transaction.generateFakeTransactions(12);
+fakeTransactions = Transaction.generateFakeTransactions(2);
 
 firstBlock.addTransactions(fakeTransactions);
 
-console.log(firstBlock.getMineableData());
+firstBlock.setSolution(88);
+
+console.log(firstBlock.getHash());

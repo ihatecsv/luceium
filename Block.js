@@ -5,6 +5,7 @@ class Block{
 	constructor(parent){
         this.parent = parent; //Block
         this.height = (this.parent != null) ? (parent.height + 1) : 0;
+        this.parent != null ? this.parent.addChild(this) : null;
 
         this.merkleRoot = null; //Buffer
         this.transactions = []; //Transaction[]
