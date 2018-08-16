@@ -16,10 +16,9 @@ fakeTransactions = Transaction.generateFakeTransactions(2);
 
 firstBlock.addTransactions(fakeTransactions);
 
-const diff = 2;
+const diff = 5;
 while(firstBlock.getHash().toString("hex").substr(0, diff) != "0".repeat(diff)){
-    console.log(firstBlock.getHash().toString("hex"));
     firstBlock.setSolution(firstBlock.nonce + 1);
 }
-
 console.log(firstBlock.getHash().toString("hex"));
+console.log(firstBlock.nonce);
